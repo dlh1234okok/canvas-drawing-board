@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      position: relative;
+    }
+
+    .control {
+      position: absolute;
+      left: 390px;
+      top: 100px;
+      z-index: 1;
+    }
+
+    #pencil, #eraser, #reset  {
+      background: #df0808;
+      color: #fff;
+      width: 50px;
+      height: 20px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type = "range"] {
+      -webkit-appearance: none;
+      box-shadow: 0 1px 0 0px #424242, 0 1px 0 #060607 inset, 0px 2px 10px 0px black inset, 1px 0px 2px rgba(0, 0, 0, 0.4) inset, 0 0px 1px rgba(0, 0, 0, 0.6) inset;
+      background-color: #df0808;
+      border-radius: 15px;
+      width: 150px;
+      height:10px;
+      cursor: pointer;
+    }
+
+    canvas {
+      background: #244242;
+      position: absolute;
+      left: 19px;
+      top: 165px;
+      z-index: 1;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="control">
+        颜色：<input id="color" type="color" value="#FFFF00" />
+        粗细：<input id="bold" type="range" min="1" max="50" value="3" />
+        <span id="bold-level">3</span>
+        <input id="pencil" type="button" value="画笔" />
+        <input id="eraser" type="button" value="橡皮擦" />
+        <input id="reset" type="reset" value="清空" />
+      </div>
+      <canvas id="canvas" width="1115" height="465"></canvas>
+      <img  src="./bg.jpg" alt="找不到背景图片" />
+    </div>
+
+    <script>
+      var c = document.getElementById("canvas");
+      var ctx = c.getContext("2d");
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 3;
+
+      // 鼠标按下时记录起始位置
+      c.onmousedown = function (e) {
+        var ev = e || window.event;
+        var startX = ev.offsetX || ev.layerX;
+        var startY = ev.offsetY || ev.layerY;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        // 鼠标每一次移动记录最终位置
+        c.onmousemove = function (e) {
+          var ev = e || window.event;
+          var endX = ev.offsetX || ev.layerX;
+          var endY = ev.offsetY || ev.layerY;
+          ctx.lineTo(endX, endY);
+          ctx.stroke();
+        }
+        // 鼠标抬起时不再记录移动的位置
+        c.onmouseup = function (e) {
+          c.onmousemove = null;
+          ctx.closePath();
+          // ctx.stroke(); // 首尾相连
+        }
+      }
+
+      // 修改笔触颜色
+      document.getElementById("color").onchange = function () {
+        ctx.strokeStyle = this.value;
+      }
+      // 修改笔触粗细
+      document.getElementById("bold").onchange = function () {
+        ctx.lineWidth = this.value;
+        document.getElementById("bold-level").innerHTML = this.value;
+      }
+      // 画笔
+      document.getElementById("pencil").onclick = function () {
+        ctx.strokeStyle = document.getElementById("color").value
+      }
+      // 橡皮擦
+      document.getElementById("eraser").onclick = function () {
+        ctx.strokeStyle = "#244242";
+      }
+      // 清空
+      document.getElementById("reset").onclick = function () {
+        ctx.clearRect(0, 0, 1115, 465);
+      }
+    </script>
+  </body>
+</html>
